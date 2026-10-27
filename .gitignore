@@ -34,3 +34,5 @@ shared/types/graphql
 *.njsproj
 *.sln
 *.sw?
+# Amp orb portals
+.amp/portals/*

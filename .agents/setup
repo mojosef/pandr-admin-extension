@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Prepares a fresh Amp orb: Shopify CLI plus workspace dependencies.
+set -euo pipefail
+
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+step() {
+  local label="$1"
+  shift
+  echo "==> $label"
+  local start=$SECONDS
+  "$@"
+  echo "    $label took $((SECONDS - start))s"
+}
+
+install_shopify_cli() {
+  if command -v shopify >/dev/null 2>&1; then
+    echo "    shopify $(shopify version 2>/dev/null || echo present) already installed"
+    return
+  fi
+  npm install --global --no-fund --no-audit @shopify/cli@latest
+}
+
+# The package.json scripts (build, dev, deploy, ...) all call the Shopify CLI.
+step "Install Shopify CLI" install_shopify_cli
+
+# pnpm-workspace.yaml + pnpm-lock.yaml define the workspace dependencies.
+step "Install workspace dependencies" pnpm install --frozen-lockfile
